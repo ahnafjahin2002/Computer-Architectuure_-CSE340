@@ -1,35 +1,179 @@
-Description of the Work Done in This Project
+# 🚁 Parallel Inference Engine for Autonomous Disaster Drones
 
-In this project, I designed and analyzed a parallel CNN inference architecture tailored for autonomous disaster response drones operating under strict power and latency constraints. The main objective was to achieve real-time onboard image inference (under 150 ms latency) within a limited power budget of less than 2W.
+## 📌 Project Overview
 
-To accomplish this, I proposed a multi-core System-on-Chip (SoC) architecture consisting of 4–8 RISC-based cores (such as RISC-V or ARM Cortex-A) using the SPMD (Single Program, Multiple Data) parallel execution model. Inspired by concepts discussed in Computer Organization and Design ARM Edition, I applied data-parallel workload distribution where each core executes the same CNN inference kernel but processes different spatial partitions of the input image.
+This project presents a **power-efficient parallel CNN inference engine** designed for **autonomous disaster response drones**.
 
-I implemented a spatial tiling strategy, dividing high-resolution input frames into an 8×8 grid. Each core processes one tile independently, improving parallel throughput and reducing inference latency. Additionally, SIMD vectorization was incorporated at the core level to accelerate multiply-accumulate (लेट) operations used in convolution layers.
+The objective is to enable **real-time onboard survivor detection** in disaster environments where:
 
-A major contribution of this project is the memory hierarchy optimization to overcome the “memory wall” problem observed in embedded AI platforms such as NVIDIABand Jetson Nano. To reduce costly DRAM access:
+- ⚡ Power is strictly limited (< 2W)
+- 🌐 Internet connectivity is unreliable or unavailable
+- ⏱ Real-time inference is required (<150 ms per frame)
 
-CNN weights are stored in a shared L2 cache for efficient read-only access.
+The system eliminates cloud dependency and performs **fully onboard AI inference** for faster and safer disaster response.
 
-Intermediate feature maps are stored in private L1 caches.
+---
 
-Tile sizes are adjusted according to L1 capacity to minimize cache misses.
+## 🎯 Project Objectives
 
-DMA-based direct camera-to-SRAM routing is used to bypass DRAM and reduce off-chip memory traffic.
+- 🚀 Achieve real-time CNN inference (<150 ms latency)
+- 🔋 Maintain total system power under 2W
+- 🧠 Implement SPMD-based parallel processing
+- 💾 Optimize memory hierarchy to reduce DRAM access
+- 🛡 Ensure reliability in harsh environments
 
-This architecture maintains cache miss rates below 10% and significantly lowers power consumption.
+---
 
-To improve reliability in harsh disaster environments, I integrated:
+## 🏗 Proposed Architecture
 
-ECC (Error-Correcting Code) protection for memory modules
+### 🔹 Multi-Core SoC Design
 
-A graceful degradation mechanism where workloads are dynamically reallocated if a core fails
+- 4–8 RISC-based cores (RISC-V / ARM Cortex-A style)
+- Shared L2 cache
+- Private L1 cache per core
+- SIMD vector processing support
+- ECC-protected memory modules
 
-Furthermore, I proposed two operational modes:
+Architecture principles are inspired by:
+📘 Computer Organization and Design ARM Edition (Patterson & Hennessy, 2016)
 
-Rescue Mode (high performance, <120 ms latency, ~1.8W power)
+---
 
-Survey Mode (energy-saving, ~400 ms latency, <1W power)
+## 🔄 Parallel Processing Model
 
-This dual-mode design allows adaptive performance scaling depending on mission requirements.
+### 🧩 SPMD (Single Program, Multiple Data)
 
-Overall, this project demonstrates how core Computer Architecture principles — parallelism, memory hierarchy optimization, SIMD acceleration, and fault tolerance — can be applied to build an energy-efficient real-time AI inference engine for autonomous disaster response drones.
+- Each core runs the same CNN inference kernel
+- Each core processes a different spatial partition of the input image
+- Uniform workload distribution across cores
+
+### ✅ Benefits
+
+- ⚡ Higher throughput
+- 📉 Reduced inference latency
+- 🧠 Efficient multi-core utilization
+
+---
+
+## 🖼 Spatial Tiling Strategy
+
+To efficiently process high-resolution images:
+
+- Input frame divided into an **8×8 grid**
+- Each tile processed independently
+- Feature maps stored in L1 cache
+
+### ✅ Advantages
+
+- 📈 Improved data locality
+- 📉 Lower cache miss rate
+- ⚡ Faster convolution processing
+
+---
+
+## 💾 Memory Hierarchy Optimization
+
+Embedded AI systems often suffer from the **memory wall problem**.
+
+Optimization techniques implemented:
+
+- 📦 CNN weights stored in Shared L2 cache (read-only)
+- 🗂 Intermediate feature maps stored in private L1 caches
+- 🔄 DMA-based direct camera-to-SRAM transfer
+- 🚫 DRAM bypass to reduce off-chip traffic
+- 📊 Cache miss rate maintained below 10%
+
+### 🎯 Result
+
+- 🔋 Power-efficient operation
+- 🚀 Reduced memory latency
+- ⚡ Faster inference
+
+---
+
+## 🧮 SIMD Acceleration
+
+Each core uses:
+
+- 🔢 SIMD vector instructions
+- ⚙ Parallel Multiply-Accumulate (MAC) operations
+
+This significantly accelerates convolution layers.
+
+---
+
+## 🛡 Reliability Features
+
+To ensure robustness in disaster environments:
+
+- 🧠 ECC (Error-Correcting Code) memory protection
+- 🔄 Graceful degradation mechanism
+  - Failed core workloads redistributed
+  - System continues at reduced performance
+
+---
+
+## ⚙ Operating Modes
+
+### 🚨 Rescue Mode (High Performance)
+
+- All cores active
+- High clock frequency
+- Inference latency: <120 ms
+- Power budget: 1.8W – 2.0W
+- Use case: Active survivor detection
+
+### 🌍 Survey Mode (Energy Saving)
+
+- 2–3 cores active
+- Reduced clock frequency
+- Inference latency: ~400 ms
+- Power budget: <1.0W
+- Use case: Wide-area terrain mapping
+
+---
+
+## 📊 System Performance
+
+- ⏱ Real-time inference latency: <150 ms
+- 🔋 Average power consumption: ~1.8W
+- 📉 Cache miss rate: <10%
+- 🧠 Efficient weight sharing via Shared L2
+- 🚀 Fully onboard processing (no cloud dependency)
+
+---
+
+## 🌍 Real-World Impact
+
+This system:
+
+- 🆘 Enables real-time survivor detection
+- 🌐 Operates without cloud infrastructure
+- 🛩 Increases drone autonomy
+- 👨‍🚒 Reduces risk for human rescuers
+- 🔋 Extends drone flight duration
+
+It demonstrates practical application of **Computer Architecture concepts** to real-world humanitarian challenges.
+
+---
+
+## 📚 References
+
+- Patterson, D. A., & Hennessy, J. L. (2016). Computer Organization and Design ARM Edition.
+- NVIDIA Jetson Nano Technical Overview (2023).
+- Zhou et al. (2024). AI Applications in UAV-Enabled Wireless Networks.
+
+---
+
+## 🏁 Conclusion
+
+This project successfully designs a:
+
+- 🔄 Parallel
+- 🔋 Energy-efficient
+- ⚡ Low-latency
+- 🛡 Fault-tolerant
+
+CNN inference engine for autonomous disaster drones.
+
+By integrating SPMD parallelism, optimized memory hierarchy, SIMD acceleration, and fault tolerance mechanisms, the system achieves a balanced trade-off between performance, power efficiency, and reliability.
